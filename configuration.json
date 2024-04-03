@@ -1,0 +1,54 @@
+{
+    "version" : "1.0",
+    "read_only_files" : [
+        ".env",
+        ".gitignore",
+        "init.sql",
+        "src/test/java/com/example/teams/AppTest.java",
+        "src/main/java/com/example/teams/entity/Teams.java",
+        "src/main/java/com/example/teams/repository/TeamsRepository.java",
+        "src/main/java/com/example/teams/TeamsApplication.java",
+        "src/main/resources/application.properties",
+        "pom.xml",
+        "configuration.json",
+        "README.md"
+    ],
+    "default_open_files": ["src/main/java/com/example/teams/controller/TeamsController.java",
+                            "src/main/java/com/example/teams/service/TeamsService.java"],
+    "scoring" : {
+        "command" : "supervisorctl -s unix:///tmp/supervisor.sock restart mysql && sleep 5 && mvn clean install && mvn clean test",
+        "files" : {
+            "target/surefire-reports/TEST-com.example.teams.AppTest.xml" : "SpringBoot API"
+        },
+        "testcase_weights" : {
+            "testGetAllWinningTeams" : 2,
+            "testGetAllTeamsResponseEmpty": 2,
+            "testGetAllWinningTeamsOK": 2,
+            "testGetAll2013TeamsOK": 2,
+            "testGetAll2013TeamsResponseEmpty": 2,
+            "testGetAll2013Teams" : 2
+        }
+    },
+    "buttons" : {
+        "build" : {
+            "command" : "mvn clean install"
+        },
+        "start_server" : {
+            "command" : "mvn clean spring-boot:run",
+            "dependencies" : ["mvn clean install"]
+        },
+        "test" : {
+            "command" :"mvn clean test",
+            "dependencies" : ["mvn clean install"]
+        },
+        "load_stub" : {
+            "command" : "/bin/bash -cx /tmp/setup_workspaces.sh"
+        }
+    },
+    "post_start" : {
+        "commands" : ["supervisorctl -s unix:///tmp/supervisor.sock start mysql",
+        "sleep 5","mysql -h localhost -u coder -pcoder < init.sql"
+        ,"mysql -h localhost -u coder -pcoder"]
+    },
+    "preview_port" : 8000
+}
